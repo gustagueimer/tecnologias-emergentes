@@ -1,16 +1,62 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>      
-<meta charset="UTF-8">
-<title>AgroVision</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ app_name }}</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
 </head>
 <body>
-<h1>AgroVision</h1>
-<p>{{ mensagem }}</p>
-<h2>Enviar imagem</h2>
-<form action="/upload" method="post" enctype="multipart/form-data">
-<input type="file" name="file" accept="image/*" required>
-<button type="submit">Enviar</button>
-</form>
+  <div class="container">
+    <h1>{{ app_name }}</h1>
+    <p class="meta">Detector: <span class="tag">{{ detector_backend }}</span></p>
+    <p class="meta">CAMERA_SOURCE: <span class="highlight">{{ camera_source }}</span></p>
+    <p class="meta">Eventos salvos: {{ event_count }}</p>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Monitoramento em tempo real</h2>
+        <img src="/stream" alt="Feed da camera" />
+      </section>
+
+      <section class="card chat-box">
+        <h2>Agente operacional</h2>
+        <textarea id="message" placeholder="Ex.: Ha risco de aumento de fluxo nos proximos minutos?"></textarea>
+        <div>
+          <button id="send-chat">Analisar</button>
+          <button id="send-chat-stream">Analisar com streaming</button>
+        </div>
+        <div id="analysis">Aguardando pergunta.</div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>Eventos recentes</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Hora</th>
+            <th>Classe</th>
+            <th>Confianca</th>
+          </tr>
+        </thead>
+        <tbody id="events-body">
+          {% for event in events %}
+          <tr>
+            <td>{{ event.event_time }}</td>
+            <td>{{ event.label }}</td>
+            <td>{{ '%.2f'|format(event.confidence) }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="3">Nenhum evento registrado.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <script src="/static/dashboard.js"></script>
 </body>
 </html>
